@@ -52,7 +52,7 @@ export default function Page() {
   const [newAmount, setNewAmount] = useState("");
   const [newDesc, setNewDesc] = useState("");
 
-  const [lookupId, setLookupId] = useState("");
+  const [SearchId, setSearchId] = useState("");
   const [invoice, setInvoice] = useState(null);
   const [lastTxHash, setLastTxHash] = useState(null);
 
@@ -164,7 +164,7 @@ export default function Page() {
     }
   }
 
-  async function lookupInvoice(id) {
+  async function SearchInvoice(id) {
     if (!id.trim()) {
         appendLog("Invoice ID is empty.");
         return null;
@@ -238,7 +238,7 @@ export default function Page() {
                   appendLog(`⚠ Payment tx not found in last ${maxSearchBlocks} blocks.`);
                 }
               } catch (err) {
-                console.error("Event lookup error:", err);
+                console.error("Event Search error:", err);
                 appendLog(`Event search failed: ${err.message}`);
               }
           }
@@ -266,14 +266,14 @@ export default function Page() {
     }
   }
 
-  async function handlePayLookup() {
-      const result = await lookupInvoice(lookupId);
+  async function handlePaySearch() {
+      const result = await SearchInvoice(SearchId);
       setInvoice(result);
       setLastTxHash(result?.txHash || null);
   }
 
-  async function handleManageLookup() {
-      const result = await lookupInvoice(manageId);
+  async function handleManageSearch() {
+      const result = await SearchInvoice(manageId);
       setManagedInvoice(result);
       setEditMode(false);
       if (result) {
@@ -289,7 +289,7 @@ export default function Page() {
 
   async function handleApprove() {
     if (!wallet) return appendLog("Connect wallet first.");
-    if (!invoice) return appendLog("Lookup an invoice first.");
+    if (!invoice) return appendLog("Search an invoice first.");
 
     try {
       setApproving(true);
@@ -314,7 +314,7 @@ export default function Page() {
 
   async function handlePay() {
     if (!wallet) return appendLog("Connect wallet first.");
-    if (!invoice) return appendLog("Lookup an invoice first.");
+    if (!invoice) return appendLog("Search an invoice first.");
 
     try {
       setPaying(true);
@@ -344,7 +344,7 @@ export default function Page() {
 
       appendLog("Invoice paid. Tx confirmed.");
       
-      await handlePayLookup();
+      await handlePaySearch();
       
     } catch (e) {
       console.error(e);
@@ -408,7 +408,7 @@ export default function Page() {
           await new Promise(resolve => setTimeout(resolve, 2000));
           
           appendLog(`Fetching invoice with new ID: ${newIdValue}`);
-          const refreshedInvoice = await lookupInvoice(newIdValue);
+          const refreshedInvoice = await SearchInvoice(newIdValue);
           
           if (refreshedInvoice) {
               setManagedInvoice(refreshedInvoice);
@@ -417,7 +417,7 @@ export default function Page() {
               setEditNewDesc(refreshedInvoice.description || "");
               appendLog(`✓ Successfully loaded invoice with ID: ${newIdValue}`);
           } else {
-              appendLog("⚠ Automatic reload failed. Please manually lookup with new ID: " + newIdValue);
+              appendLog("⚠ Automatic reload failed. Please manually Search with new ID: " + newIdValue);
               setManagedInvoice(null);
           }
 
@@ -440,20 +440,20 @@ export default function Page() {
         return (
           <>
             <section className="panel">
-              <h3>Invoice Lookup & Payment</h3>
+              <h3>Invoice Search & Payment</h3>
               <p className="sub">
                 Enter an invoice ID to check its status and make a payment using USDC.
               </p>
 
               <label>Invoice ID</label>
               <input
-                value={lookupId}
-                onChange={(e) => setLookupId(e.target.value)}
+                value={SearchId}
+                onChange={(e) => setSearchId(e.target.value)}
                 placeholder="INV-001"
               />
 
-              <button className="primary" onClick={handlePayLookup}>
-                Lookup Invoice
+              <button className="primary" onClick={handlePaySearch}>
+                Search Invoice
               </button>
 
               {invoice && (
@@ -608,8 +608,8 @@ export default function Page() {
                   placeholder="INV-001"
                   style={{marginBottom: 0}}
                 />
-                 <button className="action" onClick={handleManageLookup} style={{ flexShrink: 0, minWidth: 100 }}>
-                    Lookup
+                 <button className="action" onClick={handleManageSearch} style={{ flexShrink: 0, minWidth: 100 }}>
+                    Search
                 </button>
                 <button 
                   className="action" 
@@ -812,7 +812,7 @@ export default function Page() {
                     <strong>For Invoice Payers:</strong>
                   </p>
                   <ol style={{ paddingLeft: 20 }}>
-                    <li>Go to "Pay / Lookup" and enter the invoice ID</li>
+                    <li>Go to "Pay / Search" and enter the invoice ID</li>
                     <li>Review the invoice details (amount, issuer, description)</li>
                     <li>Approve USDC spending for the total amount (invoice + 1% fee)</li>
                     <li>Complete the payment transaction</li>
@@ -887,7 +887,7 @@ export default function Page() {
       default:
         return null;
     }
-  }, [currentPage, invoice, lookupId, managedInvoice, manageId, editMode, editNewId, editNewAmount, editNewDesc, newId, newAmount, newDesc, canCreate, creating, paying, approving, editing, deleting, wallet, decimals, lastTxHash, usdc, payArc]);
+  }, [currentPage, invoice, SearchId, managedInvoice, manageId, editMode, editNewId, editNewAmount, editNewDesc, newId, newAmount, newDesc, canCreate, creating, paying, approving, editing, deleting, wallet, decimals, lastTxHash, usdc, payArc]);
 
   return (
     <div className="app">
@@ -906,7 +906,7 @@ export default function Page() {
               className={`nav-item ${currentPage === "pay" ? "active" : ""}`}
               onClick={() => setCurrentPage("pay")}
             >
-              <span>💸 Pay / Lookup</span>
+              <span>💸 Pay / Search</span>
               {currentPage === "pay" && <span className="nav-dot"></span>}
             </div>
             <div 
