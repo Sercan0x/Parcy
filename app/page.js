@@ -1,4 +1,10 @@
-"use client";
+<button
+                        className="primary"
+                        onClick={handlePay}
+                        disabled={paying || !wallet}
+                      >
+                        {paying ? "Paying..." : "Pay Invoice"}
+                      </button>"use client";
 
 import { useState, useMemo } from "react";
 import { ethers } from "ethers";
@@ -207,7 +213,7 @@ export default function Page() {
                 let attempts = 0;
                 const maxAttempts = Math.ceil(maxSearchBlocks / chunkSize);
                 
-                appendLog(`Searching for payment tx);
+                appendLog(`Searching for payment tx (up to ${maxSearchBlocks} blocks back)...`);
                 
                 while (!foundTxHash && attempts < maxAttempts && searchFromBlock > 0) {
                   attempts++;
