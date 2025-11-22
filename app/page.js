@@ -195,8 +195,6 @@ export default function Page() {
           if (txHashCache[trimmedId]) {
               foundTxHash = txHashCache[trimmedId];
               appendLog(`Tx Hash from cache: ${foundTxHash.slice(0, 10)}...`);
-          } else if (lastTxHash) {
-              foundTxHash = lastTxHash;
           } else {
               try {
                 const currentBlock = await rpcProvider.getBlockNumber();
