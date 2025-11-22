@@ -319,7 +319,6 @@ export default function Page() {
 
     try {
       setPaying(true);
-      appendLog("Paying invoice ...");
 
       const fee = invoice.amountRaw / BigInt(100);
       const totalRequired = invoice.amountRaw + fee;
@@ -327,11 +326,14 @@ export default function Page() {
       const allowance = await usdc.allowance(wallet, PAYARC_ADDRESS);
       
       if (allowance < totalRequired) {
-          appendLog("Allowance too low. Approve for total payment (Invoice + Fee) first.");
-          setPaying(false);
-          return;
+          appendLog("Approving USDC...");
+          const approveTx = await usdc.approve(PAYARC_ADDRESS, totalRequired);
+          appendLog("Approve tx: " + approveTx.hash);
+          await approveTx.wait();
+          appendLog("USDC approved.");
       }
 
+      appendLog("Paying invoice ...");
       const tx = await payArc.payInvoice(invoice.id);
       
       const actualTxHash = tx.hash;
@@ -520,18 +522,9 @@ export default function Page() {
                     {!invoice.paid ? (
                       <>
                         <button
-                          className="action"
-                          onClick={handleApprove}
-                          disabled={approving || !wallet}
-                        >
-                          {approving ? "Approving..." : "Approve USDC"}
-                        </button>
-
-                        <button
                           className="primary"
                           onClick={handlePay}
-                          disabled={paying || !wallet}
-                          style={{ marginLeft: 8 }}
+                          disabled={paying || !wallet}                          
                         >
                           {paying ? "Paying..." : "Pay Invoice"}
                         </button>
