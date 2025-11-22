@@ -207,7 +207,7 @@ export default function Page() {
                 let attempts = 0;
                 const maxAttempts = Math.ceil(maxSearchBlocks / chunkSize);
                 
-                appendLog(`Searching for payment tx (up to ${maxSearchBlocks} blocks back)...`);
+                appendLog(`Searching for payment tx);
                 
                 while (!foundTxHash && attempts < maxAttempts && searchFromBlock > 0) {
                   attempts++;
